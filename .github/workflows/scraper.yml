@@ -1,0 +1,32 @@
+name: Run Azair Scraper
+
+on:
+  workflow_dispatch:   # ręczne uruchamianie
+  schedule:
+    - cron: "0 6 * * *"   # codziennie o 6:00 UTC
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Build with Maven
+        run: mvn -B package
+
+      - name: Run scraper
+        run: mvn exec:java -Dexec.mainClass="AzairScraper"
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: wyniki-lotow
+          path: wyniki_lotow.txt
